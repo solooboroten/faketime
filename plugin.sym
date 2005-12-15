@@ -1,0 +1,5 @@
+# $Id$
+time
+ftime
+gettimeofday
+clock_gettime
