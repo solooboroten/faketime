@@ -38,8 +38,10 @@
 static void __attribute__ ((noreturn))
 show_usage(const char *str)
 {
-	fprintf(stderr, "%s: %s\nTry `%s --help' for more information.\n",
-		program_invocation_short_name, str,
+	if (str)
+		fprintf(stderr, "%s: %s\n",
+			program_invocation_short_name, str);
+	fprintf(stderr, "Try `%s --help' for more information.\n",
 		program_invocation_short_name);
 	exit(EXIT_FAILURE);
 }
@@ -124,7 +126,7 @@ main(int ac, char **av)
 				print_help();
 				break;
 			default:
-				show_usage("unrecognized option");
+				show_usage(NULL);
 				break;
 		}
 	}
