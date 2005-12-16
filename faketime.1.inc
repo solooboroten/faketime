@@ -22,4 +22,5 @@
 
 [SEE ALSO]
 .BR date (1),
+.BR touch (1),
 info "\fBDate input formats\fR".
