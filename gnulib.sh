@@ -14,4 +14,4 @@ tool="$1/gnulib-tool"
 [ -f "$tool" -a -x "$tool" ] || fatal "$tool is not available"
 
 mkdir -p doc lib m4
-"$tool" --import --dir=. getdate
+"$tool" --import --dir=. getdate posixtm
