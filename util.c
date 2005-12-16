@@ -27,12 +27,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 #include <errno.h>
 #include <error.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include "getdate.h"
+#include "posixtm.h"
 
 static void __attribute__ ((noreturn))
 show_usage(const char *str)
@@ -41,21 +42,6 @@ show_usage(const char *str)
 		program_invocation_short_name, str,
 		program_invocation_short_name);
 	exit(EXIT_FAILURE);
-}
-
-static void __attribute__ ((noreturn))
-print_help(void)
-{
-	printf("Execute program with changed notion of system time.\n"
-	       "\nUsage: %s [options] <timespec> <program>...\n"
-	       "\nValid options are:\n"
-	       "  --version:\n"
-	       "       print program version and exit.\n"
-	       "  -h or --help:\n"
-	       "       print this help text and exit.\n"
-	       "\nTime specification can be in almost any common format.\n",
-	       program_invocation_short_name);
-	exit(EXIT_SUCCESS);
 }
 
 static void __attribute__ ((noreturn))
@@ -69,39 +55,124 @@ print_version(void)
 	exit(EXIT_SUCCESS);
 }
 
-int
-main(int ac, const char **av)
+static void __attribute__ ((noreturn))
+print_help(void)
 {
-	struct timespec now, tp;
-	const char *timespec, *preload;
+	printf("Execute program with changed notion of system time.\n"
+	       "\nUsage: %s [options] <program>...\n"
+	       "\nValid options are:\n"
+	       "  -d STRING:\n"
+	       "       use time described by STRING\n"
+	       "  -r FILE:\n"
+	       "       use the last modification time of FILE\n"
+	       "  -t STAMP:\n"
+	       "       use timestamp in [[CC]YY]MMDDhhmm[.ss] format\n"
+	       "  -i:\n"
+	       "       do not freeze the time, increment it in usual way\n"
+	       "  -V, --version:\n"
+	       "       print program version and exit\n"
+	       "  -h, --help:\n"
+	       "       print this help text and exit\n"
+	       "\nTime specifications for the -d and -t options have\n"
+	       "the same format as in date(1) and touch(1) utilities.\n",
+	       program_invocation_short_name);
+	exit(EXIT_SUCCESS);
+}
+
+static char const short_options[] = "d:r:t:iVh";
+
+static struct option const long_options[] = {
+	{"version", no_argument, NULL, 'V'},
+	{"help", no_argument, NULL, 'h'},
+	{NULL, 0, NULL, 0}
+};
+
+int
+main(int ac, char **av)
+{
+	int     optc;
+	int     relative = 0;
+	struct timespec now, when;
+	const char *d_str = 0, *r_str = 0, *t_str = 0;
+	const char *preload;
 	char   *env;
 
 	if (ac < 2)
 		show_usage("insufficient arguments");
 
-	if (!strcmp("-h", av[1]) || !strcmp("--help", av[1]))
-		print_help();
+	while ((optc =
+		getopt_long(ac, av, short_options, long_options, NULL)) != -1)
+	{
+		switch (optc)
+		{
+			case 'd':
+				d_str = optarg;
+				break;
+			case 'r':
+				r_str = optarg;
+				break;
+			case 't':
+				t_str = optarg;
+				break;
+			case 'i':
+				relative = 1;
+				break;
+			case 'V':
+				print_version();
+				break;
+			case 'h':
+				print_help();
+				break;
+			default:
+				show_usage("unrecognized option");
+				break;
+		}
+	}
 
-	if (!strcmp("--version", av[1]))
-		print_version();
-
-	if (ac < 3)
+	if (optind >= ac)
 		show_usage("insufficient arguments");
 
-	timespec = (av[1][0] == '-' || av[1][0] == '+') ? av[1] + 1 : av[1];
-	memset(&tp, 0, sizeof tp);
-	gettime(&now);
-	if (!get_date(&tp, timespec, &now))
-		error(EXIT_FAILURE, 0, "invalid date: %s", av[1]);
+	if (t_str && (r_str || d_str))
+		show_usage("cannot specify times from more than one source");
 
-	if (timespec == av[1])
+	gettime(&now);
+	memset(&when, 0, sizeof when);
+
+	if (t_str)
 	{
-		if (asprintf(&env, "%lu", (unsigned long) tp.tv_sec) < 0)
+		if (!posixtime
+		    (&when.tv_sec, t_str,
+		     PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
+			error(EXIT_FAILURE, 0, "%s: invalid date format",
+			      t_str);
+	} else if (r_str)
+	{
+		struct stat stb;
+
+		if (stat(r_str, &stb))
+			error(EXIT_FAILURE, errno,
+			      "%s: failed to get attributes", r_str);
+		when.tv_sec = stb.st_mtime;
+		if (d_str && !get_date(&when, d_str, &when))
+			error(EXIT_FAILURE, 0, "%s: invalid date format",
+			      d_str);
+	} else if (d_str)
+	{
+		if (!get_date(&when, d_str, NULL))
+			error(EXIT_FAILURE, 0, "%s: invalid date format",
+			      d_str);
+	} else
+		show_usage("no time source specified");
+
+	if (relative)
+	{
+		if (asprintf
+		    (&env, "%+ld",
+		     (long) when.tv_sec - (long) now.tv_sec) < 0)
 			error(EXIT_FAILURE, errno, "asprintf");
 	} else
 	{
-		if (asprintf
-		    (&env, "%+ld", (long) tp.tv_sec - (long) now.tv_sec) < 0)
+		if (asprintf(&env, "%lu", (unsigned long) when.tv_sec) < 0)
 			error(EXIT_FAILURE, errno, "asprintf");
 	}
 
@@ -122,7 +193,7 @@ main(int ac, const char **av)
 			error(EXIT_FAILURE, errno, "putenv");
 	}
 
-	execvp(av[2], (char *const *) av + 2);
-	error(EXIT_FAILURE, errno, "execvp: %s", av[2]);
+	execvp(av[optind], (char *const *) av + optind);
+	error(EXIT_FAILURE, errno, "execvp: %s", av[optind]);
 	return EXIT_FAILURE;
 }
