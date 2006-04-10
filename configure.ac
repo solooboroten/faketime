@@ -1,4 +1,3 @@
-dnl $Id$
 dnl Copyright (C) 2005  Dmitry V. Levin <ldv@altlinux.org>
 
 dnl This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,4 @@
 /*
-  $Id$
 
   Copyright (C) 2005  Dmitry V. Levin <ldv@altlinux.org>
 

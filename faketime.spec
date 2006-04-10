@@ -1,5 +1,3 @@
-# $Id$
-
 Name: faketime
 Version: 0.1
 Release: alt1
