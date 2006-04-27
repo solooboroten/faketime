@@ -7,7 +7,7 @@ License: GPL
 Group: Development/Other
 Packager: Dmitry V. Levin <ldv@altlinux.org>
 
-Source: %name-%version.tar.bz2
+Source: %name-%version.tar
 
 BuildPreReq: help2man
 
