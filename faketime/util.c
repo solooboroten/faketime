@@ -80,7 +80,7 @@ print_help(void)
 	exit(EXIT_SUCCESS);
 }
 
-static char const short_options[] = "d:r:t:iVh";
+static char const short_options[] = "+d:r:t:iVh";
 
 static struct option const long_options[] = {
 	{"version", no_argument, NULL, 'V'},
