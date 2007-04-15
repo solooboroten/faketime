@@ -1,5 +1,5 @@
 Name: faketime
-Version: 0.1
+Version: 0.2
 Release: alt1
 
 Summary: Execute program with changed notion of system time
@@ -35,5 +35,9 @@ rm %buildroot%_libdir/*.la
 %_man1dir/*
 
 %changelog
+* Sun Apr 15 2007 Dmitry V. Levin <ldv@altlinux.org> 0.2-alt1
+- Changed option processing to stop after the first non-option argument (at).
+- Fixed to build with current gnulib.
+
 * Thu Dec 15 2005 Dmitry V. Levin <ldv@altlinux.org> 0.1-alt1
 - Initial revision.
