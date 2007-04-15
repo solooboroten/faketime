@@ -1,2 +1,3 @@
 spec: faketime/faketime.spec
 tar: faketime
+tar: gnulib-current:. name=gnulib

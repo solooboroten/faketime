@@ -7,7 +7,8 @@ License: GPL
 Group: Development/Other
 Packager: Dmitry V. Levin <ldv@altlinux.org>
 
-Source: %name-%version.tar
+Source: faketime-%version.tar
+Source1: gnulib.tar
 
 BuildPreReq: help2man
 
@@ -16,9 +17,11 @@ The faketime utility helps to execute programs with changed notion of
 system time.
 
 %prep
-%setup -q
+%setup -q -a1
+./gnulib.sh gnulib
 
 %build
+autoreconf -fisv
 %configure
 %make_build
 

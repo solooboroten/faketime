@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 #include "getdate.h"
 #include "posixtm.h"
+#include "timespec.h"
 
 static void __attribute__ ((noreturn))
 show_usage(const char *str)
