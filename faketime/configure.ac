@@ -14,7 +14,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 
-AC_INIT([faketime],[0.1],[ldv@altlinux.org])
+AC_INIT([faketime],[0.2.1],[ldv@altlinux.org])
 AC_CONFIG_SRCDIR([plugin.c])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
