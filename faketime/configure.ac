@@ -1,4 +1,4 @@
-dnl Copyright (C) 2005  Dmitry V. Levin <ldv@altlinux.org>
+dnl Copyright (C) 2005,2008  Dmitry V. Levin <ldv@altlinux.org>
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -17,14 +17,13 @@ dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 AC_INIT([faketime],[0.1],[ldv@altlinux.org])
 AC_CONFIG_SRCDIR([plugin.c])
 AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
-AC_CANONICAL_HOST
 AC_PROG_CC
 gl_EARLY
+gl_INIT
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
-gl_INIT
 
 AC_CONFIG_FILES([Makefile lib/Makefile])
 AC_OUTPUT
