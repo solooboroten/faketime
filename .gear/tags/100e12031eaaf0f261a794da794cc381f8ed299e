@@ -1,0 +1,6 @@
+object ec05a8bbc1eb5feacf9fc37a9ebb34c92ab4371c
+type commit
+tag gnulib-current
+tagger Dmitry V. Levin <ldv@altlinux.org> 1220119971 +0000
+
+v0.0-953-gec05a8b
