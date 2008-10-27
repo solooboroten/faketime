@@ -1,5 +1,5 @@
 Name: faketime
-Version: 0.2.1
+Version: 0.2.2
 Release: alt1
 
 Summary: Execute program with changed notion of system time
@@ -19,6 +19,7 @@ system time.
 %prep
 %setup -q -a1
 ./gnulib.sh gnulib
+sed -i 's/return (/return (int)(/' lib/timespec.h
 
 %build
 autoreconf -fisv
@@ -35,6 +36,9 @@ rm %buildroot%_libdir/*.la
 %_man1dir/*
 
 %changelog
+* Tue Oct 28 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.2-alt1
+- Fixed build with fresh gcc.
+
 * Sat Aug 30 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.1-alt1
 - Updated gnulib.
 
