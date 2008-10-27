@@ -1,6 +1,6 @@
 /*
 
-  Copyright (C) 2005  Dmitry V. Levin <ldv@altlinux.org>
+  Copyright (C) 2005, 2008  Dmitry V. Levin <ldv@altlinux.org>
 
   The faketime plugin.
 
@@ -50,6 +50,7 @@ init_sym(void)
 	const char *value = getenv(name) ? : "";
 	char   *p = 0;
 	unsigned long n;
+	time_t  t = 0;
 
 	if (!*value)
 	{
@@ -61,16 +62,23 @@ init_sym(void)
 	n = strtoul(value, &p, 10);
 	if (!p || *p)
 		errno = EINVAL;
-	if (!p || *p || (n == ULONG_MAX && errno == ERANGE))
+	else
+	{
+		t = (time_t) n;
+		if ((unsigned long) t != n)
+			errno = ERANGE;
+	}
+	if (!p || *p || (n == ULONG_MAX && errno == ERANGE)
+	    || ((unsigned long) t != n))
 	{
 		fprintf(stderr, "%s: %s: %s\n", name, value, strerror(errno));
 		exit(1);
 	}
 
 	if (value[0] == '-' || value[0] == '+')
-		time_off = n;
+		time_off = (time_t) t;
 	else
-		time_abs = n;
+		time_abs = (time_t) t;
 }
 
 static void *load_sym(const char *name)
