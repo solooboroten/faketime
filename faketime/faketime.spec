@@ -1,16 +1,16 @@
 Name: faketime
 Version: 0.2.2
-Release: alt1
+Release: 1%{?dist}
 
 Summary: Execute program with changed notion of system time
 License: GPL
 Group: Development/Other
-Packager: Dmitry V. Levin <ldv@altlinux.org>
 
 Source: faketime-%version.tar
 Source1: gnulib.tar
 
-BuildPreReq: help2man
+BuildRequires: make autoconf automake libtool bison
+BuildRequires: help2man
 
 %description
 The faketime utility helps to execute programs with changed notion of
@@ -24,18 +24,22 @@ sed -i 's/return (/return (int)(/' lib/timespec.h
 %build
 autoreconf -fisv
 %configure
-%make_build
+make
 
 %install
+rm -rf %buildroot
 %makeinstall
 rm %buildroot%_libdir/*.la
 
 %files
 %_bindir/*
 %_libdir/*.so
-%_man1dir/*
+%_mandir/man1/*
 
 %changelog
+* Wed Nov 16 2011 Evgeny Sinelnikov <sin@altlinux.ru> 0.2.2-1
+- build for fedora
+
 * Tue Oct 28 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.2-alt1
 - Fixed build with fresh gcc.
 
