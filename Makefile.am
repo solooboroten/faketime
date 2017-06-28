@@ -21,7 +21,8 @@ WARNINGS = -W -Wall -Waggregate-return -Wcast-align -Wconversion \
 	-Wdisabled-optimization -Wmissing-declarations \
 	-Wmissing-format-attribute -Wmissing-noreturn \
 	-Wmissing-prototypes -Wpointer-arith -Wshadow \
-	-Wstrict-prototypes -Wwrite-strings -Werror
+	-Wstrict-prototypes -Wwrite-strings -Werror \
+	-Wno-error=nonnull-compare
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CFLAGS = -std=gnu99 $(WARNINGS)
